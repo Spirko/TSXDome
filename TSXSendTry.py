@@ -35,5 +35,5 @@ def TSXSendTry(message):
     return data2
 
 def TSXGetDome():
-    result = float(TSXSendTry("sky6Dome.dAz")[0])
+    result = float(TSXSendTry("sky6Dome.GetAzEl(); out=sky6Dome.dAz;")[0])
     return result

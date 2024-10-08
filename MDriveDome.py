@@ -20,18 +20,25 @@ def MDriveAzGet():
     cur_pos = int(result.split('\n')[2])
     return cur_pos / resolution
 
-def ClosestAz(az, cur_az):
+def close_delta(az, cur_az):
     delta = (az - cur_az)
-    close_delta = (delta + 180)%360 - 180
-    return cur_az + close_delta
+    return (delta + 180)%360 - 180
+
+def close_azimuth(az, cur_az):
+    cur_delta = close_delta(az, cur_az)
+    return cur_az + cur_delta
 
 def MDriveAzGoto(az):
     cur_az = MDriveAzGet()
+        
+    if abs(close_delta(az,cur_az)) > 2:
+      new_az = close_azimuth(az, cur_az)
+      new_pos = int(new_az * resolution)
+      result = MDriveSend(f'AMA {new_pos}')
+    else:
 
-    new_az = ClosestAz(az, cur_az)
-    new_pos = int(new_az * resolution)
-
-    result = MDriveSend(f'AMA {new_pos}')
+      print(f"Slew from {cur_az} to {az} rotation not needed for delta {abs(close_delta(az,cur_az))}")
+      result = None
     return result
 
 
